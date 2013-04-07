@@ -5,6 +5,7 @@ import java.util.List;
 import android.os.Bundle;
 //import android.app.Activity;
 import android.view.Menu;
+import android.view.MotionEvent;
 import android.widget.Toast;
 
 import com.google.android.maps.MapActivity;
@@ -12,6 +13,10 @@ import com.google.android.maps.MapView;
 import com.google.android.maps.MapController;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.Overlay;
+import com.google.android.maps.OverlayItem;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.LatLngBoundsCreator;
 import com.group7.project.R;
 
 import android.content.Context;
@@ -19,19 +24,59 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Point;
+import android.graphics.drawable.Drawable;
 import android.location.GpsStatus;
 import android.location.GpsStatus.Listener;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 
-public class MainActivity extends MapActivity
-{
-
+public class MainActivity extends MapActivity implements BuildingCoordinates
+{	
 	private MapView mapView;
 	private MapController mapController;
 	private LocationManager locationManager;
 	private LocationListener locationListener;
+
+	private String currentBuilding = "(none)";
+
+/*
+	//LIMIT TO CAMPUS - THIS IS HARD
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent event)
+	{
+		GeoPoint newPoint;
+		
+		final float minLong = -97.156992f;
+		final float maxLong = -97.123303f;
+		final float minLat = 49.805292f;
+		final float maxLat = 49.813758f;
+		
+		int currLat;
+		int currLong;
+		
+		if (event.getAction() == MotionEvent.ACTION_MOVE)
+		{
+			newPoint = mapView.getProjection().fromPixels((int)event.getX(), (int)event.getY());
+			
+			currLat = newPoint.getLatitudeE6();
+			currLong = newPoint.getLongitudeE6();
+
+			float temp = currLat - minLat;
+			int minLatInt = (int)(minLat * 1E6);
+			
+			if ((currLat - minLatInt) < 0)
+			{
+				newPoint = new GeoPoint(minLatInt, currLong);
+				//mapController.stopPanning();				
+				//mapController.setCenter(newPoint);
+				mapView.invalidate();
+			}
+		}
+		
+		return super.dispatchTouchEvent(event);
+	}
+*/	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -61,6 +106,28 @@ public class MainActivity extends MapActivity
 		mapController = mapView.getController();
 		mapController.setZoom(20);	//set default zoom level
 		mapController.setCenter(centerPoint);
+		
+		List<Overlay> mapOverlays = mapView.getOverlays();
+		Drawable drawable = this.getResources().getDrawable(R.drawable.ic_launcher);
+		HelloItemizedOverlay itemizedoverlay = new HelloItemizedOverlay(drawable, this);
+		
+		GeoPoint point = new GeoPoint(
+				(int) (E2_NORTHEAST.latitude * 1E6),
+				(int) (E2_NORTHEAST.longitude * 1E6)
+			);
+		
+		OverlayItem overlayitem = new OverlayItem(point, "E2", "NORTH EAST");
+		itemizedoverlay.addOverlay(overlayitem);
+		mapOverlays.add(itemizedoverlay);
+		
+		GeoPoint point2 = new GeoPoint(
+				(int) (E2_SOUTHWEST.latitude * 1E6),
+				(int) (E2_SOUTHWEST.longitude * 1E6)
+			);
+		
+		OverlayItem overlayitem2 = new OverlayItem(point2, "E2", "SOUTH WEST");
+		itemizedoverlay.addOverlay(overlayitem2);
+		mapOverlays.add(itemizedoverlay);
 	}
 
 	@Override
@@ -103,43 +170,75 @@ public class MainActivity extends MapActivity
 					(int) (location.getLatitude() * 1E6),
 					(int) (location.getLongitude() * 1E6)
 				);
-				
-				mapController.animateTo(point);
+
+				//mapController.animateTo(point);
 				mapController.setZoom(20);
-				
+			
+				/*
 				  // add marker
 				  MapOverlay mapOverlay = new MapOverlay();
 				  mapOverlay.setPointToDraw(point);
 				  List<Overlay> listOfOverlays = mapView.getOverlays();
 				  listOfOverlays.clear();
 				  listOfOverlays.add(mapOverlay);
+				*/
 				
 				//invalidating it forces the map view to re-draw
 				mapView.invalidate();
 				
-				Toast.makeText(getBaseContext(),
-					"Lat: " + location.getLatitude() + 
-					"\nLong: " + location.getLongitude(), 
-					Toast.LENGTH_SHORT).show();
+				LatLng currPoint = new LatLng(location.getLatitude(), location.getLongitude());
+				
+				if (HOUSE.getBounds().contains(currPoint))
+				{
+					if (!currentBuilding.equals(HOUSE.getName()))
+					{
+						Toast.makeText(getBaseContext(),
+								"ENTERED " + HOUSE.getName(),
+								Toast.LENGTH_SHORT).show();
+						
+						currentBuilding = HOUSE.getName();
+					}
+				}
+				else
+				{
+					Toast.makeText(getBaseContext(),
+							"NOT IN " + HOUSE.getName(),
+							Toast.LENGTH_SHORT).show();
+				}
+				
+				if (E1.getBounds().contains(currPoint))
+				{
+					Toast.makeText(getBaseContext(),
+							"ENTERED " + E1.getName(),
+							Toast.LENGTH_SHORT).show();
+					
+					currentBuilding = E1.getName();
+					
+					System.out.println(currentBuilding);
+				}
 			}
 		}
 
 		@Override
 		public void onProviderDisabled(String provider)
 		{
-			Toast.makeText(getBaseContext(), "Provider disabled (" + provider + ")", Toast.LENGTH_LONG).show();
+			//Toast.makeText(getBaseContext(), "Provider disabled (" + provider + ")", Toast.LENGTH_LONG).show();
 		}
-
+		
+		private void onTap()
+		{
+			//Toast.makeText(getBaseContext(), "TAP!", Toast.LENGTH_SHORT).show();
+		}
 		@Override
 		public void onProviderEnabled(String provider)
 		{
-			Toast.makeText(getBaseContext(), "Provider enabled (" + provider + ")", Toast.LENGTH_LONG).show();
+			//Toast.makeText(getBaseContext(), "Provider enabled (" + provider + ")", Toast.LENGTH_LONG).show();
 		}
 
 		@Override
 		public void onStatusChanged(String provider, int status, Bundle extras)
 		{
-			Toast.makeText(getBaseContext(), "Status changed: (" + provider + " - " + status + ")", Toast.LENGTH_LONG).show();
+			//Toast.makeText(getBaseContext(), "Status changed: (" + provider + " - " + status + ")", Toast.LENGTH_LONG).show();
 		}
 
 		@Override
