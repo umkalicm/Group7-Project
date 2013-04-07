@@ -31,13 +31,13 @@ public class Building
 	public LatLng getCenter()
 	{
 		double n = bounds.northeast.latitude;
-        double e = bounds.northeast.longitude;
-        double s = bounds.southwest.latitude;
-        double w = bounds.southwest.longitude;
+		double e = bounds.northeast.longitude;
+		double s = bounds.southwest.latitude;
+		double w = bounds.southwest.longitude;
         
-        double lat = ((n + s) / 2.0);
-        double lon = ((e + w) / 2.0);
+		double lat = ((n + s) / 2.0);
+		double lon = ((e + w) / 2.0);
         
-        return new LatLng(lat, lon);
+		return new LatLng(lat, lon);
 	}
 }
