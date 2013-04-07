@@ -5,6 +5,7 @@ import java.util.List;
 import android.os.Bundle;
 //import android.app.Activity;
 import android.view.Menu;
+//import android.view.MotionEvent;
 import android.widget.Toast;
 
 import com.google.android.maps.MapActivity;
@@ -12,6 +13,8 @@ import com.google.android.maps.MapView;
 import com.google.android.maps.MapController;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.Overlay;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.group7.project.R;
 
 import android.content.Context;
@@ -27,11 +30,69 @@ import android.location.LocationManager;
 
 public class MainActivity extends MapActivity
 {
-
+	final LatLng E1_NORTHEAST = new LatLng(49.808039, -97.133147);
+	final LatLng E1_SOUTHWEST = new LatLng(49.808659, -97.133936);
+	final LatLngBounds E1_BOUNDS = new LatLngBounds(E1_NORTHEAST, E1_SOUTHWEST);
+	
 	private MapView mapView;
 	private MapController mapController;
 	private LocationManager locationManager;
 	private LocationListener locationListener;
+
+	private String currentBuilding = "(none)";
+	
+	private Building E1 = new Building("EITC-E1", E1_BOUNDS);
+	
+/*	
+	//LIMIT TO CAMPUS - THIS IS HARD
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent event)
+	{
+		GeoPoint newPoint;
+		
+		final float minLong = -97.156992f;
+		final float maxLong = -97.123303f;
+		final float minLat = 49.805292f;
+		final float maxLat = 49.813758f;
+		
+		int currLat;
+		int currLong;
+		
+		if (event.getAction() == MotionEvent.ACTION_MOVE)
+		{
+			newPoint = mapView.getProjection().fromPixels((int)event.getX(), (int)event.getY());
+						
+			currLat = newPoint.getLatitudeE6();
+			currLong = newPoint.getLongitudeE6();
+
+			float temp = currLat - minLat;
+			int minLatInt = (int)(minLat * 1E6);
+			
+			Toast.makeText(getBaseContext(), "currLat: " + currLat +
+					"\nminLat: " + minLatInt,
+					Toast.LENGTH_SHORT).show();
+			
+			if ((currLat - minLatInt) < 0)
+			{
+				newPoint = new GeoPoint(minLatInt, currLong);
+				mapController.stopPanning();				
+				mapController.setCenter(newPoint);
+				mapView.invalidate();
+				
+				try
+				{
+					mapController.wait(2000);
+				}
+				catch (Exception e)
+				{
+					
+				}
+			}
+		}
+		
+		return super.dispatchTouchEvent(event);
+	}
+*/
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -117,29 +178,50 @@ public class MainActivity extends MapActivity
 				//invalidating it forces the map view to re-draw
 				mapView.invalidate();
 				
+				LatLng currPoint = new LatLng(location.getLatitude(), location.getLongitude());
+				
+				if (E1.getBounds().contains(currPoint))
+				{
+					Toast.makeText(getBaseContext(),
+							"ENTERED " + E1.getName(),
+							Toast.LENGTH_SHORT).show();
+					
+					currentBuilding = E1.getName();
+					
+					System.out.println(currentBuilding);
+				}
+				else
+				{
+					Toast.makeText(getBaseContext(),
+							"NOT IN " + E1.getName(),
+							Toast.LENGTH_SHORT).show();
+				}
+				
+				/*
 				Toast.makeText(getBaseContext(),
 					"Lat: " + location.getLatitude() + 
 					"\nLong: " + location.getLongitude(), 
 					Toast.LENGTH_SHORT).show();
+				*/
 			}
 		}
 
 		@Override
 		public void onProviderDisabled(String provider)
 		{
-			Toast.makeText(getBaseContext(), "Provider disabled (" + provider + ")", Toast.LENGTH_LONG).show();
+			//Toast.makeText(getBaseContext(), "Provider disabled (" + provider + ")", Toast.LENGTH_LONG).show();
 		}
 
 		@Override
 		public void onProviderEnabled(String provider)
 		{
-			Toast.makeText(getBaseContext(), "Provider enabled (" + provider + ")", Toast.LENGTH_LONG).show();
+			//Toast.makeText(getBaseContext(), "Provider enabled (" + provider + ")", Toast.LENGTH_LONG).show();
 		}
 
 		@Override
 		public void onStatusChanged(String provider, int status, Bundle extras)
 		{
-			Toast.makeText(getBaseContext(), "Status changed: (" + provider + " - " + status + ")", Toast.LENGTH_LONG).show();
+			//Toast.makeText(getBaseContext(), "Status changed: (" + provider + " - " + status + ")", Toast.LENGTH_LONG).show();
 		}
 
 		@Override
