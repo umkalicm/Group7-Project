@@ -3,6 +3,7 @@ package com.group7.project;
 import java.util.List;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
@@ -36,7 +37,7 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 	private MapController mapController;		// But most processing will happen with the map controller
 	private LocationManager locationManager;	// Location manager deals with things to do with current device location (GPS)
 	private LocationListener locationListener;	// The listener that checks for all events to do with location (GPS turned on/off, location change, etc.
-	private boolean trackingUser = true;		// Boolean value keeps track of whether or not we are currently locked onto and tracking the user's location
+	private boolean trackingUser = false;		// Boolean value keeps track of whether or not we are currently locked onto and tracking the user's location
 	static int markerLoc = -1;					// Used to keep track of the user's location marker in the mapView list of overlays
 	ToggleButton toggleTrackingButton;			// The button used to toggle turning user lock-on tracking on and off
 	GeoPoint userPoint;							// The user's coordinates
@@ -82,6 +83,10 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 	 * dispatchTouchEvent can handle many, MANY things. Right now all we need it for is to check
 	 * 	when the user has panned the screen (MotionEvent.ACTION_MOVE).
 	 * 	If the user has moved the screen around, then we should turn off the lock-on tracking of their location
+	 *  But they will have needed to have moved more than 70... units?
+	 *  This was to fix issues with pressing the toggle button and it also registering as movement, meaning the toggle
+	 *  would want to turn tracking off, but this function would do it first, so then the toggle would just turn it back
+	 *  on again
 	 * 
 	 * Could use this function later to check on keeping the user within our required boundaries with use of LatLngBounds
 	 * 
@@ -91,8 +96,37 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 	{
 		if (event.getAction() == MotionEvent.ACTION_MOVE)
 		{
-			trackingUser = false;
-			toggleTrackingButton.setChecked(false);
+			float startX = event.getX();
+			float startY = event.getY();
+			float distanceSum = 0;
+			final int historySize = event.getHistorySize();
+			
+			for (int h = 0; h < historySize; h++)
+			{
+				// historical point
+				float hx = event.getHistoricalX(0, h);
+				float hy = event.getHistoricalY(0, h);
+				// distance between startX,startY and historical point
+				float dx = (hx-startX);
+				float dy = (hy-startY);
+				distanceSum += Math.sqrt(dx*dx+dy*dy);
+				// make historical point the start point for next loop iteration
+				startX = hx;
+				startY = hy;
+			}
+			
+		    // add distance from last historical point to event's point
+		    float dx = (event.getX(0)-startX);
+		    float dy = (event.getY(0)-startY);
+		    distanceSum += Math.sqrt(dx*dx+dy*dy);
+		    
+		    Log.d("CheckMovement", Float.toString(distanceSum));
+		    
+		    if (distanceSum > 70.0)
+		    {
+		    	trackingUser = false;
+				toggleTrackingButton.setChecked(false);
+		    }
 		}
 		
 		return super.dispatchTouchEvent(event);
@@ -390,7 +424,7 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 		@Override
 		public void onGpsStatusChanged(int event)
 		{
-			System.out.println("GPS Status: " + event);
+			//System.out.println("GPS Status: " + event);
 
 			if (event != GpsStatus.GPS_EVENT_SATELLITE_STATUS)
 			{
