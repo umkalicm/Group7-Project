@@ -26,6 +26,6 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:onClick="@string/toggleUserTracking"
-        android:text="ToggleButton" />
+        android:text="@string/ToggleButton" />
 
 </RelativeLayout>
