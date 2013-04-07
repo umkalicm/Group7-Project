@@ -370,7 +370,7 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 					
 					currentBuilding = E1.getName();
 					
-					System.out.println(currentBuilding);
+					Log.d("CurrentBuilding", currentBuilding);
 				}
 			}
 		}
