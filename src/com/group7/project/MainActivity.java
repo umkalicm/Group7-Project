@@ -3,7 +3,6 @@ package com.group7.project;
 import java.util.List;
 
 import android.os.Bundle;
-//import android.app.Activity;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
@@ -33,33 +32,56 @@ import android.location.LocationManager;
 
 public class MainActivity extends MapActivity implements BuildingCoordinates
 {	
-	private MapView mapView;
-	private MapController mapController;
-	private LocationManager locationManager;
-	private LocationListener locationListener;
-	private boolean trackingUser = true;
-	static int markerLoc = -1;
-	ToggleButton toggleTrackingButton;
-	GeoPoint userPoint;
+	private MapView mapView;					// The map view used for higher level functions
+	private MapController mapController;		// But most processing will happen with the map controller
+	private LocationManager locationManager;	// Location manager deals with things to do with current device location (GPS)
+	private LocationListener locationListener;	// The listener that checks for all events to do with location (GPS turned on/off, location change, etc.
+	private boolean trackingUser = true;		// Boolean value keeps track of whether or not we are currently locked onto and tracking the user's location
+	static int markerLoc = -1;					// Used to keep track of the user's location marker in the mapView list of overlays
+	ToggleButton toggleTrackingButton;			// The button used to toggle turning user lock-on tracking on and off
+	GeoPoint userPoint;							// The user's coordinates
 	
-	private String currentBuilding = "(none)";
+	private String currentBuilding = "(none)";	// String value to keep track of the building we are currently in
 	
+	/****************
+	 * toggleUserTracking
+	 * 
+	 * @param v - The view that called this function
+	 * 
+	 * Called on click of toggleTrackingButton.
+	 * Will turn lock-on tracking on and off, and update variables and buttons accordingly
+	 * 
+	 */
 	public void toggleUserTracking(View v)
 	{
+		//checks if a user point is set yet, or if the GPS is not turned on
 		if (userPoint == null || !locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
 		{
 			Toast.makeText(getBaseContext(), "Location not set by GPS", Toast.LENGTH_SHORT).show();
 			toggleTrackingButton.setChecked(false);
+			trackingUser = false;	//redundant code for just in case situations
 		}
 		else
 		{
-			trackingUser = !trackingUser;
-			toggleTrackingButton.setChecked(trackingUser);
-			mapController.animateTo(userPoint);
+			trackingUser = !trackingUser;						//toggle the lock-on
+			toggleTrackingButton.setChecked(trackingUser);		//turn button on/off
+			mapController.animateTo(userPoint);					//instantly focus on user's current location
 		}
 		
 	}
 	
+	/****************
+	 * dispatchTouchEvent
+	 * 
+	 * @param event - The event that called this function
+	 * 
+	 * dispatchTouchEvent can handle many, MANY things. Right now all we need it for is to check
+	 * 	when the user has panned the screen (MotionEvent.ACTION_MOVE).
+	 * 	If the user has moved the screen around, then we should turn off the lock-on tracking of their location
+	 * 
+	 * Could use this function later to check on keeping the user within our required boundaries with use of LatLngBounds
+	 * 
+	 */
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent event)
 	{
@@ -71,6 +93,7 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 		
 		return super.dispatchTouchEvent(event);
 	}
+	
 /*
 	//LIMIT TO CAMPUS - THIS IS HARD
 	@Override
@@ -109,18 +132,29 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 	}
 */	
 	
+	/****************
+	 * onCreate
+	 *  
+	 * @param savedInstanceState - Holds any dynamic data held in onSaveInstanceState (we don't need to worry about this)
+	 * 
+	 * The initial set up of everything that needs to be done when the view is first created
+	 * 	ie. when the app is first run
+	 * 
+	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
+		//starting latitude and longitude. currently a location near EITC
 		final float startLat = 49.808503f;
 		final float startLong = -97.135824f;
 		
-		GeoPoint centerPoint = new GeoPoint((int)(startLat * 1E6), (int)(startLong * 1E6));
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+		super.onCreate(savedInstanceState);		//run the parent's onCreate, where I imagine the UI stuff gets taken care of
+		setContentView(R.layout.activity_main);	//set our main activity to be the default view
 		
-		mapView = (MapView) findViewById(R.id.mapView);
-		toggleTrackingButton = (ToggleButton) findViewById(R.id.toggleTrackingButton);
+		GeoPoint centerPoint = new GeoPoint((int)(startLat * 1E6), (int)(startLong * 1E6));	//create a GeoPoint based on those values
+		
+		mapView = (MapView) findViewById(R.id.mapView);	//get the MapView object from activity_main
+		toggleTrackingButton = (ToggleButton) findViewById(R.id.toggleTrackingButton);	//get the toggleTrackingButton from activity_main
 
 		//settings on what to show on the map
 		//mapView.setSatellite(true);
@@ -131,13 +165,26 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 		locationListener = new GPSLocationListener();
 		
 		locationManager.addGpsStatusListener((Listener) locationListener);
-		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);	
+		
+		//This next line here sets our listener to check for changes to the GPS
+		//The first integer value is the minimum time to wait before taking another update (in milliseconds)
+		//So entering 500 here means it will only listen and run it's functions every 0.5 seconds
+		//The second integer value is the minimum change in distance required before the functions will be called (in metres)
+		//So entering 4 here means that unless the user has moved 4 metres from the last time we did an update, nothing will be called
+		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+		
 		
 		//mapView.setBuiltInZoomControls(true);	//turn on zoom controls
 
 		mapController = mapView.getController();
-		mapController.setZoom(20);	//set default zoom level
-		mapController.setCenter(centerPoint);
+		mapController.setZoom(20);					//set default zoom level
+		mapController.setCenter(centerPoint);		//move center of map
+		
+		// Overlays stuff could be very important later on. I don't quite fully understand it yet myself
+		// All these do right now is display little Android icons at the North-East and South-West corners
+		// of a building (which I currently have set to E1).
+		// ***** THIS IS ONLY DEBUG CODE USED TO CHECK THE BOUNDS OF BUILDINGS ENTERED *******
+		// See the BuildingCoordinates.java file for more details on buildings
 		
 		List<Overlay> mapOverlays = mapView.getOverlays();
 		Drawable drawable = this.getResources().getDrawable(R.drawable.ic_launcher);
@@ -162,6 +209,15 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 		mapOverlays.add(itemizedoverlay);
 	}
 
+	/****************
+	 * onCreateOptionsMenu
+	 * 
+	 * @param menu - The menu we're gonna create? Not too sure about this function
+	 * 
+	 * I imagine this could come in handy later if we want to do some menu stuff.
+	 * Would need to read up on it more
+	 * 
+	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
@@ -170,12 +226,23 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 		return true;
 	}
 	
+	/****************
+	 * onBackPressed
+	 * 
+	 * Called when the user presses the back button on the device
+	 * 
+	 */
 	public void onBackPressed()
 	{
 		//pressing the back button on the device will kill the app
 		System.exit(0);
 	}
 	
+	/****************
+	 * isRouteDisplayed
+	 * 
+	 * Used if we want to display routing information
+	 */
 	@Override
 	protected boolean isRouteDisplayed()
 	{
@@ -183,16 +250,23 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 		return false;
 	}
 	
+	
+	
+	
 	private class GPSLocationListener implements LocationListener, GpsStatus.Listener
 	{
-		private int GPSEvent = GpsStatus.GPS_EVENT_STOPPED;
-		/*
-			Called any time the user's location changes. The Toast thing at the bottom shows that when on GPS,
-			the user's location changes a ton even when they're not actually moving
-			There's definitely a way to adjust this function to fit our needs.
-			Such as setting a delta and choosing to only run stuff when the user's location has changed by a
-			certain amount within our desired range of error
-		*/
+		private int GPSEvent = GpsStatus.GPS_EVENT_STOPPED;		// Keeps track of the current status of the GPS
+		
+		/****************
+		 * onLocationChanged
+		 * 
+		 * @param location - User's changed location
+		 * 
+		 * Called any time the user's location changes
+		 * So far, we're using it to update the location of the user's icon, but can later be used to check
+		 * if a user is within the range of a building
+		 * 
+		 */
 		@Override
 		public void onLocationChanged(Location location) {
 
@@ -215,19 +289,25 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 				mapOverlay.setPointToDraw(userPoint);
 				List<Overlay> listOfOverlays = mapView.getOverlays();
 				
-				if (markerLoc != -1)
+				if (markerLoc != -1)	// markerLoc == -1 if no location had ever been previously set
 				{
 					listOfOverlays.remove(markerLoc);
 				}
 				
-				listOfOverlays.add(mapOverlay);
-				markerLoc = listOfOverlays.size()-1;
-				//listOfOverlays.add(mapOverlay);
+				listOfOverlays.add(mapOverlay);			//add the marker to the mapView's overlays
+				markerLoc = listOfOverlays.size()-1;	//keep track of where it's stored so we can update it later
 				
 				//invalidating it forces the map view to re-draw
 				mapView.invalidate();
 				
 				LatLng currPoint = new LatLng(location.getLatitude(), location.getLongitude());
+				
+				// TEST CODE - to see if it could detect that I was inside my house
+				// This kind of code is the basis of what we could do to detect when the user is in range of a building
+				// This is more for when they enter a building. In terms of figuring out how far they are from a
+				// building, I don't think this code will work. LatLngBounds has a .getCenter() function in JavaScript
+				// which would have been AWESOME to have here. Unfortunately the Android API doesn't have anything like
+				// that. We could probably calculate our own if we really wanted to...
 				
 				if (HOUSE.getBounds().contains(currPoint))
 				{
@@ -260,6 +340,14 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 			}
 		}
 
+		/****************
+		 * onProviderDisabled
+		 * 
+		 * @param provider - Name of the location provider that has been disabled
+		 * 
+		 * We only use this right now to keep all our tracking information consistent when the user
+		 * decides to turn off the GPS
+		 */
 		@Override
 		public void onProviderDisabled(String provider)
 		{
@@ -282,17 +370,33 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 			//Toast.makeText(getBaseContext(), "Status changed: (" + provider + " - " + status + ")", Toast.LENGTH_LONG).show();
 		}
 
+		/****************
+		 * onGpsStatusChanged
+		 * 
+		 * @param event - The integer value of the event that has occurred
+		 * 
+		 * Used to update the GPSEvent variable so that we know what's going on with the GPS
+		 * 
+		 * Called when the GPS' status has changed
+		 * 		1 = GPS_EVENT_STARTED			(GPS turned on)
+		 *  	2 = GPS_EVENT_STOPPED			(GPS turned off)
+		 *  	3 = GPS_EVENT_FIRST_FIX			(Got fix on GPS satellite after having nothing and searching)
+		 *  	4 = GPS_EVENT_SATELLITE_STATUS	(Event sent periodically to report GPS satellite status, we don't care about this)	
+		 */
 		@Override
 		public void onGpsStatusChanged(int event)
 		{
 			System.out.println("GPS Status: " + event);
-			
+
 			if (event != GpsStatus.GPS_EVENT_SATELLITE_STATUS)
 			{
 				GPSEvent = event;
 			}
 		}
 	}
+	
+	
+	
 	
 	private class MapOverlay extends Overlay
 	{
