@@ -3,6 +3,7 @@ package com.group7.project;
 import java.util.List;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
