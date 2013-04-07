@@ -120,8 +120,6 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 		    float dy = (event.getY(0)-startY);
 		    distanceSum += Math.sqrt(dx*dx+dy*dy);
 		    
-		    Log.d("CheckMovement", Float.toString(distanceSum));
-		    
 		    if (distanceSum > 70.0)
 		    {
 		    	trackingUser = false;
