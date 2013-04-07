@@ -65,7 +65,11 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 		{
 			trackingUser = !trackingUser;						//toggle the lock-on
 			toggleTrackingButton.setChecked(trackingUser);		//turn button on/off
-			mapController.animateTo(userPoint);					//instantly focus on user's current location
+			
+			if (trackingUser)
+			{
+				mapController.animateTo(userPoint);				//instantly focus on user's current location
+			}
 		}
 		
 	}
