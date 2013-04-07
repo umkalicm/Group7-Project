@@ -54,7 +54,7 @@ public class MainActivity extends MapActivity
 		locationListener = new GPSLocationListener();
 		
 		locationManager.addGpsStatusListener((Listener) locationListener);
-		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);	
+		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 500, 4, locationListener);	
 		
 		//mapView.setBuiltInZoomControls(true);	//turn on zoom controls
 
