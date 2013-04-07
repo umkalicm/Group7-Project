@@ -122,7 +122,7 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 		    
 		    if (distanceSum > 70.0)
 		    {
-		    	trackingUser = false;
+				trackingUser = false;
 				toggleTrackingButton.setChecked(false);
 		    }
 		}
