@@ -6,10 +6,18 @@ import com.google.android.gms.maps.model.LatLngBounds;
 public interface BuildingCoordinates
 {
 	// EITC-E1
+	final LatLng E1_NORTHEAST = new LatLng(49.808600, -97.133249);
+	final LatLng E1_SOUTHWEST = new LatLng(49.808032, -97.133834);
+	final LatLngBounds E1_BOUNDS = new LatLngBounds(E1_SOUTHWEST, E1_NORTHEAST);
+	static Building E1 = new Building("EITC-E1", E1_BOUNDS);
+	
+	/*
+	// EITC-E1
 	final LatLng E1_NORTHEAST = new LatLng(49.8086, -97.133249);
 	final LatLng E1_SOUTHWEST = new LatLng(49.808032, -97.133834);
 	final LatLngBounds E1_BOUNDS = new LatLngBounds(E1_SOUTHWEST, E1_NORTHEAST);
 	static Building E1 = new Building("EITC-E1", E1_BOUNDS);
+	*/
 	
 	// EITC-E2
 	final LatLng E2_NORTHEAST = new LatLng(49.80895, -97.133426);
@@ -19,7 +27,7 @@ public interface BuildingCoordinates
 	
 	// EITC-E3
 	final LatLng E3_NORTHEAST = new LatLng(49.808652, -97.13444);
-	final LatLng E3_SOUTHWEST = new LatLng(49.809116, -97.134939);
+	final LatLng E3_SOUTHWEST = new LatLng(49.808116, -97.134939);
 	final LatLngBounds E3_BOUNDS = new LatLngBounds(E3_SOUTHWEST, E3_NORTHEAST);
 	static Building E3 = new Building("EITC-E3", E3_BOUNDS); 
 	

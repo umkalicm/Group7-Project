@@ -6,7 +6,9 @@ import android.os.Bundle;
 //import android.app.Activity;
 import android.view.Menu;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
@@ -15,8 +17,6 @@ import com.google.android.maps.GeoPoint;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.LatLngBoundsCreator;
 import com.group7.project.R;
 
 import android.content.Context;
@@ -37,9 +37,40 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 	private MapController mapController;
 	private LocationManager locationManager;
 	private LocationListener locationListener;
-
+	private boolean trackingUser = true;
+	static int markerLoc = -1;
+	ToggleButton toggleTrackingButton;
+	GeoPoint userPoint;
+	
 	private String currentBuilding = "(none)";
-
+	
+	public void toggleUserTracking(View v)
+	{
+		if (userPoint == null || !locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+		{
+			Toast.makeText(getBaseContext(), "Location not set by GPS", Toast.LENGTH_SHORT).show();
+			toggleTrackingButton.setChecked(false);
+		}
+		else
+		{
+			trackingUser = !trackingUser;
+			toggleTrackingButton.setChecked(trackingUser);
+			mapController.animateTo(userPoint);
+		}
+		
+	}
+	
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent event)
+	{
+		if (event.getAction() == MotionEvent.ACTION_MOVE)
+		{
+			trackingUser = false;
+			toggleTrackingButton.setChecked(false);
+		}
+		
+		return super.dispatchTouchEvent(event);
+	}
 /*
 	//LIMIT TO CAMPUS - THIS IS HARD
 	@Override
@@ -89,6 +120,7 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 		setContentView(R.layout.activity_main);
 		
 		mapView = (MapView) findViewById(R.id.mapView);
+		toggleTrackingButton = (ToggleButton) findViewById(R.id.toggleTrackingButton);
 
 		//settings on what to show on the map
 		//mapView.setSatellite(true);
@@ -99,7 +131,7 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 		locationListener = new GPSLocationListener();
 		
 		locationManager.addGpsStatusListener((Listener) locationListener);
-		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 500, 4, locationListener);	
+		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);	
 		
 		//mapView.setBuiltInZoomControls(true);	//turn on zoom controls
 
@@ -112,20 +144,20 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 		HelloItemizedOverlay itemizedoverlay = new HelloItemizedOverlay(drawable, this);
 		
 		GeoPoint point = new GeoPoint(
-				(int) (E2_NORTHEAST.latitude * 1E6),
-				(int) (E2_NORTHEAST.longitude * 1E6)
+				(int) (E1_NORTHEAST.latitude * 1E6),
+				(int) (E1_NORTHEAST.longitude * 1E6)
 			);
 		
-		OverlayItem overlayitem = new OverlayItem(point, "E2", "NORTH EAST");
+		OverlayItem overlayitem = new OverlayItem(point, "E1", "NORTH EAST");
 		itemizedoverlay.addOverlay(overlayitem);
 		mapOverlays.add(itemizedoverlay);
 		
 		GeoPoint point2 = new GeoPoint(
-				(int) (E2_SOUTHWEST.latitude * 1E6),
-				(int) (E2_SOUTHWEST.longitude * 1E6)
+				(int) (E1_SOUTHWEST.latitude * 1E6),
+				(int) (E1_SOUTHWEST.longitude * 1E6)
 			);
 		
-		OverlayItem overlayitem2 = new OverlayItem(point2, "E2", "SOUTH WEST");
+		OverlayItem overlayitem2 = new OverlayItem(point2, "E1", "SOUTH WEST");
 		itemizedoverlay.addOverlay(overlayitem2);
 		mapOverlays.add(itemizedoverlay);
 	}
@@ -166,22 +198,31 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 
 			// Run the very first time the GPS gets a signal and is able to fix the user's location
 			if (location != null && GPSEvent == GpsStatus.GPS_EVENT_FIRST_FIX) {
-				GeoPoint point = new GeoPoint(
+				userPoint = new GeoPoint(
 					(int) (location.getLatitude() * 1E6),
 					(int) (location.getLongitude() * 1E6)
 				);
+				
+				if (trackingUser)
+				{
+					toggleTrackingButton.setChecked(true);
+					mapController.animateTo(userPoint);
+					mapController.setZoom(20);
+				}
 
-				//mapController.animateTo(point);
-				mapController.setZoom(20);
-			
-				/*
-				  // add marker
-				  MapOverlay mapOverlay = new MapOverlay();
-				  mapOverlay.setPointToDraw(point);
-				  List<Overlay> listOfOverlays = mapView.getOverlays();
-				  listOfOverlays.clear();
-				  listOfOverlays.add(mapOverlay);
-				*/
+				// add marker
+				MapOverlay mapOverlay = new MapOverlay();
+				mapOverlay.setPointToDraw(userPoint);
+				List<Overlay> listOfOverlays = mapView.getOverlays();
+				
+				if (markerLoc != -1)
+				{
+					listOfOverlays.remove(markerLoc);
+				}
+				
+				listOfOverlays.add(mapOverlay);
+				markerLoc = listOfOverlays.size()-1;
+				//listOfOverlays.add(mapOverlay);
 				
 				//invalidating it forces the map view to re-draw
 				mapView.invalidate();
@@ -222,13 +263,13 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 		@Override
 		public void onProviderDisabled(String provider)
 		{
-			//Toast.makeText(getBaseContext(), "Provider disabled (" + provider + ")", Toast.LENGTH_LONG).show();
+			if (provider.equals(LocationManager.GPS_PROVIDER))
+			{
+				trackingUser = false;
+				toggleTrackingButton.setChecked(false);
+			}
 		}
 		
-		private void onTap()
-		{
-			//Toast.makeText(getBaseContext(), "TAP!", Toast.LENGTH_SHORT).show();
-		}
 		@Override
 		public void onProviderEnabled(String provider)
 		{
