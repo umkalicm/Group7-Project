@@ -36,6 +36,10 @@ public class MainActivity extends MapActivity
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
+		final float startLat = 49.808503f;
+		final float startLong = -97.135824f;
+		
+		GeoPoint centerPoint = new GeoPoint((int)(startLat * 1E6), (int)(startLong * 1E6));
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
@@ -55,7 +59,8 @@ public class MainActivity extends MapActivity
 		//mapView.setBuiltInZoomControls(true);	//turn on zoom controls
 
 		mapController = mapView.getController();
-		mapController.setZoom(4);	//set default zoom level
+		mapController.setZoom(20);	//set default zoom level
+		mapController.setCenter(centerPoint);
 	}
 
 	@Override
