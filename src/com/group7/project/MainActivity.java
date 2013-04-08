@@ -1,5 +1,6 @@
 package com.group7.project;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 import android.os.Bundle;
@@ -40,6 +41,7 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 	static int markerLoc = -1;					// Used to keep track of the user's location marker in the mapView list of overlays
 	ToggleButton toggleTrackingButton;			// The button used to toggle turning user lock-on tracking on and off
 	GeoPoint userPoint;							// The user's coordinates
+	List<Building> listOfBuildings;				// Listing of all buildings in BuildingCoordinates.java
 	
 	private String currentBuilding = "(none)";	// String value to keep track of the building we are currently in
 	
@@ -242,6 +244,29 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 		OverlayItem overlayitem2 = new OverlayItem(point2, "E1", "SOUTH WEST");
 		itemizedoverlay.addOverlay(overlayitem2);
 		mapOverlays.add(itemizedoverlay);
+		
+		//TODO: Fix this code. I want to try and get a listing of all the buildings and save them so we can
+		//		access them easier later
+		
+		/*
+		Building temp = null;
+		
+		for (Field f : BuildingCoordinates.class.getDeclaredFields())
+		{
+			Class<?> test = f.getType();
+			if (test.equals(Building.class))
+			{
+				try
+				{
+					listOfBuildings.add((Building)f.get(temp));
+				}
+				catch (IllegalAccessException iae)
+				{
+					
+				}
+			}
+		}
+		*/
 	}
 
 	/****************
@@ -354,12 +379,6 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 						
 						currentBuilding = HOUSE.getName();
 					}
-				}
-				else
-				{
-					Toast.makeText(getBaseContext(),
-							"NOT IN " + HOUSE.getName(),
-							Toast.LENGTH_SHORT).show();
 				}
 				
 				if (E1.getBounds().contains(currPoint))

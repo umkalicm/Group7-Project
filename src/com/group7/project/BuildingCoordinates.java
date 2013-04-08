@@ -5,6 +5,9 @@ import com.google.android.gms.maps.model.LatLngBounds;
 
 public interface BuildingCoordinates
 {
+	final int NUM_BUILDINGS = 5;
+	static Building AllBuildings[] = new Building[NUM_BUILDINGS];
+	int i=0;
 	// Used this site to get coordinates: http://itouchmap.com/latlong.html
 	
 	// EITC-E1
@@ -12,7 +15,7 @@ public interface BuildingCoordinates
 	final LatLng E1_SOUTHWEST = new LatLng(49.808032, -97.133834);
 	final LatLngBounds E1_BOUNDS = new LatLngBounds(E1_SOUTHWEST, E1_NORTHEAST);
 	static Building E1 = new Building("EITC-E1", E1_BOUNDS);
-		
+
 	// EITC-E2
 	final LatLng E2_NORTHEAST = new LatLng(49.80895, -97.133426);
 	final LatLng E2_SOUTHWEST = new LatLng(49.808399, -97.134247);
