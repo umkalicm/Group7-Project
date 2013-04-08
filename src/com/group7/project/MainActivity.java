@@ -247,7 +247,7 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 		mapOverlays.add(itemizedoverlay);
 		
 		//TODO: Fix this code. I want to try and get a listing of all the buildings and save them so we can
-		//		access them easier later
+		//		access them easier later.
 		
 		/*
 		Building temp = null;
