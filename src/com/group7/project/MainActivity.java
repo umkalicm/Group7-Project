@@ -366,7 +366,7 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 						if (!currentBuilding.equals(b.getName()))
 						{
 							Toast.makeText(getBaseContext(),
-									"ENTERED " + HOUSE.getName(),
+									"ENTERED " + b.getName(),
 									Toast.LENGTH_SHORT).show();
 							
 							currentBuilding = b.getName();
@@ -383,7 +383,7 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 					}
 				}
 	 			
-				if(minDistance == 70)//tell user they are near a building only once when they get about 70 metres close to it 
+				if(minDistance == 70 && minBuilding != null)//tell user they are near a building only once when they get about 70 metres close to it 
 				{					 //this prevents multiple alerts as they get closer
 					AlertDialog.Builder builder1 = new AlertDialog.Builder(activity);
 		            builder1.setMessage("You are near " + minBuilding.getName());
