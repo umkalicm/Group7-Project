@@ -48,8 +48,8 @@ public class Building
 	public Location getCentreLocation()
 	{
 		centrePoint = new Location(name);
-		centrePoint.setLatitude(centre.latitude);
-		centrePoint.setLongitude(centre.longitude);
+		centrePoint.setLatitude(getCenter().latitude);
+		centrePoint.setLongitude(getCenter().longitude);
 
 		return centrePoint;
 	}

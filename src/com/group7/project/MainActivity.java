@@ -256,28 +256,6 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 		AllBuildings[2] = E3;
 		AllBuildings[3] = UCENTRE;
 		AllBuildings[4] = HOUSE;
-		
-		/*
-		
-		
-		Building temp = null;
-		
-		for (Field f : BuildingCoordinates.class.getDeclaredFields())
-		{
-			Class<?> test = f.getType();
-			if (test.equals(Building.class))
-			{
-				try
-				{
-					listOfBuildings.add((Building)f.get(temp));
-				}
-				catch (IllegalAccessException iae)
-				{
-					
-				}
-			}
-		}
-		*/
 	}
 
 	/****************
@@ -406,7 +384,7 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 						}
 					}
 				}
-				
+	 			
 				if(minDistance < 20)
 				{
 					AlertDialog.Builder builder1 = new AlertDialog.Builder(activity);
