@@ -19,6 +19,15 @@ public class Building
 	{
 		this.name = name;
 		this.bounds = bounds;
+		double n = bounds.northeast.latitude;
+		double e = bounds.northeast.longitude;
+		double s = bounds.southwest.latitude;
+		double w = bounds.southwest.longitude;
+        
+		double lat = ((n + s) / 2.0);
+		double lon = ((e + w) / 2.0);
+        
+		centre = new LatLng(lat,lon);
 	}
 	
 	public LatLngBounds getBounds()
@@ -33,23 +42,14 @@ public class Building
 	
 	public LatLng getCenter()
 	{
-		double n = bounds.northeast.latitude;
-		double e = bounds.northeast.longitude;
-		double s = bounds.southwest.latitude;
-		double w = bounds.southwest.longitude;
-        
-		double lat = ((n + s) / 2.0);
-		double lon = ((e + w) / 2.0);
-        
-		centre = new LatLng(lat,lon);
 		return centre;
 	}
 	
 	public Location getCentreLocation()
 	{
 		centrePoint = new Location(name);
-		centrePoint.setLatitude(getCenter().latitude);
-		centrePoint.setLongitude(getCenter().longitude);
+		centrePoint.setLatitude(centre.latitude);
+		centrePoint.setLongitude(centre.longitude);
 
 		return centrePoint;
 	}

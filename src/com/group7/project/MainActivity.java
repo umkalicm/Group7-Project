@@ -393,30 +393,7 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 		            
 		            AlertDialog alert11 = builder1.create();
 		            alert11.show();
-				}
-				
-				/*if (HOUSE.getBounds().contains(currPoint))
-				{
-					if (!currentBuilding.equals(HOUSE.getName()))
-					{
-						Toast.makeText(getBaseContext(),
-								"ENTERED " + HOUSE.getName(),
-								Toast.LENGTH_SHORT).show();
-						
-						currentBuilding = HOUSE.getName();
-					}
-				}
-				
-				if (E1.getBounds().contains(currPoint))
-				{
-					Toast.makeText(getBaseContext(),
-							"ENTERED " + E1.getName(),
-							Toast.LENGTH_SHORT).show();
-					
-					currentBuilding = E1.getName();
-					
-					Log.d("CurrentBuilding", currentBuilding);
-				}*/
+				}				
 			}
 		}
 
