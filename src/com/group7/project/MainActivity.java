@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
@@ -389,7 +390,7 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 					
 					currentBuilding = E1.getName();
 					
-					System.out.println(currentBuilding);
+					Log.d("CurrentBuilding", currentBuilding);
 				}
 			}
 		}
