@@ -240,7 +240,7 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 		// See the BuildingCoordinates.java file for more details on buildings
 		
 		List<Overlay> mapOverlays = mapView.getOverlays();
-		Drawable drawable = this.getResources().getDrawable(R.drawable.ic_launcher);
+		Drawable drawable = this.getResources().getDrawable(R.drawable.marker);
 		HelloItemizedOverlay itemizedoverlay = new HelloItemizedOverlay(drawable, this);
 		
 		for(Building b:AllBuildings)
@@ -254,23 +254,6 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 			itemizedoverlay.addOverlay(overlayitem);
 			mapOverlays.add(itemizedoverlay);	
 		}
-		/*GeoPoint point2 = new GeoPoint(
-				(int) (E1_SOUTHWEST.latitude * 1E6),
-				(int) (E1_SOUTHWEST.longitude * 1E6)
-			);
-		
-		OverlayItem overlayitem2 = new OverlayItem(point2, "E2", "SOUTH WEST");
-		itemizedoverlay.addOverlay(overlayitem2);
-		mapOverlays.add(itemizedoverlay);
-		
-		GeoPoint point2 = new GeoPoint(
-				(int) (E1_SOUTHWEST.latitude * 1E6),
-				(int) (E1_SOUTHWEST.longitude * 1E6)
-			);
-		
-		OverlayItem overlayitem2 = new OverlayItem(point2, "E1", "SOUTH WEST");
-		itemizedoverlay.addOverlay(overlayitem2);
-		mapOverlays.add(itemizedoverlay);*/
 	}
 
 	/****************
@@ -400,8 +383,8 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 					}
 				}
 	 			
-				if(minDistance < 20)
-				{
+				if(minDistance == 70)//tell user they are near a building only once when they get about 70 metres close to it 
+				{					 //this prevents multiple alerts as they get closer
 					AlertDialog.Builder builder1 = new AlertDialog.Builder(activity);
 		            builder1.setMessage("You are near " + minBuilding.getName());
 		            builder1.setCancelable(true);
