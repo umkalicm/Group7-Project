@@ -20,6 +20,7 @@ import com.google.android.maps.OverlayItem;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.group7.project.R;
 
 import android.app.Activity;
@@ -51,7 +52,7 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 	
 	private String currentBuilding = "(none)";	// String value to keep track of the building we are currently in
 	private Activity activity = this;
-	private GoogleMap mMap;
+//	private GoogleMap mMap;
 	/****************
 	 * toggleUserTracking
 	 * 
@@ -238,17 +239,28 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 		// ***** THIS IS ONLY DEBUG CODE USED TO CHECK THE BOUNDS OF BUILDINGS ENTERED *******
 		// See the BuildingCoordinates.java file for more details on buildings
 		
-		/*List<Overlay> mapOverlays = mapView.getOverlays();
+		List<Overlay> mapOverlays = mapView.getOverlays();
 		Drawable drawable = this.getResources().getDrawable(R.drawable.ic_launcher);
 		HelloItemizedOverlay itemizedoverlay = new HelloItemizedOverlay(drawable, this);
 		
-		GeoPoint point = new GeoPoint(
-				(int) (E1_NORTHEAST.latitude * 1E6),
-				(int) (E1_NORTHEAST.longitude * 1E6)
+		for(Building b:AllBuildings)
+		{
+			GeoPoint point = new GeoPoint(
+					(int) (b.getCenter().latitude * 1E6),
+					(int) (b.getCenter().longitude * 1E6)
+				);
+			
+			OverlayItem overlayitem = new OverlayItem(point, b.getName(), "Founded: 1900");
+			itemizedoverlay.addOverlay(overlayitem);
+			mapOverlays.add(itemizedoverlay);	
+		}
+		/*GeoPoint point2 = new GeoPoint(
+				(int) (E1_SOUTHWEST.latitude * 1E6),
+				(int) (E1_SOUTHWEST.longitude * 1E6)
 			);
 		
-		OverlayItem overlayitem = new OverlayItem(point, "E1", "NORTH EAST");
-		itemizedoverlay.addOverlay(overlayitem);
+		OverlayItem overlayitem2 = new OverlayItem(point2, "E2", "SOUTH WEST");
+		itemizedoverlay.addOverlay(overlayitem2);
 		mapOverlays.add(itemizedoverlay);
 		
 		GeoPoint point2 = new GeoPoint(
@@ -259,16 +271,6 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 		OverlayItem overlayitem2 = new OverlayItem(point2, "E1", "SOUTH WEST");
 		itemizedoverlay.addOverlay(overlayitem2);
 		mapOverlays.add(itemizedoverlay);*/
-		
-		//mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.mapView)).getMap();
-		/*mMap.addMarker(new MarkerOptions()
-        .position(new LatLng(0, 0))
-        .title("Hello world"));
-		for(Building b: AllBuildings)
-		{
-			
-		}*/
-		
 	}
 
 	/****************
