@@ -1,5 +1,7 @@
 package com.group7.project;
 
+import android.location.Location;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 
@@ -10,7 +12,8 @@ public class Building
 {
 	String name;
 	LatLngBounds bounds;
-	//GeoPoint centrePoint;
+	Location centrePoint;
+	LatLng centre;
 	
 	public Building(String name, LatLngBounds bounds)
 	{
@@ -38,6 +41,16 @@ public class Building
 		double lat = ((n + s) / 2.0);
 		double lon = ((e + w) / 2.0);
         
-		return new LatLng(lat, lon);
+		centre = new LatLng(lat,lon);
+		return centre;
+	}
+	
+	public Location getCentreLocation()
+	{
+		centrePoint = new Location(name);
+		centrePoint.setLatitude(centre.latitude);
+		centrePoint.setLongitude(centre.longitude);
+
+		return centrePoint;
 	}
 }

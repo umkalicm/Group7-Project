@@ -20,6 +20,8 @@ import com.google.android.maps.OverlayItem;
 import com.google.android.gms.maps.model.LatLng;
 import com.group7.project.R;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -42,10 +44,11 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 	static int markerLoc = -1;					// Used to keep track of the user's location marker in the mapView list of overlays
 	ToggleButton toggleTrackingButton;			// The button used to toggle turning user lock-on tracking on and off
 	GeoPoint userPoint;							// The user's coordinates
-	List<Building> listOfBuildings;				// Listing of all buildings in BuildingCoordinates.java
+//	List<Building> listOfBuildings;				// Listing of all buildings in BuildingCoordinates.java
+	private float distanceToBuilding;			// Calculates distance between user and center point of building
 	
 	private String currentBuilding = "(none)";	// String value to keep track of the building we are currently in
-	
+	private Activity activity = this; 
 	/****************
 	 * toggleUserTracking
 	 * 
@@ -246,10 +249,17 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 		itemizedoverlay.addOverlay(overlayitem2);
 		mapOverlays.add(itemizedoverlay);
 		
-		//TODO: Fix this code. I want to try and get a listing of all the buildings and save them so we can
+		//Get a listing of all the buildings and save them so we can
 		//		access them easier later
+		AllBuildings[0] = E1;
+		AllBuildings[1] = E2;
+		AllBuildings[2] = E3;
+		AllBuildings[3] = UCENTRE;
+		AllBuildings[4] = HOUSE;
 		
 		/*
+		
+		
 		Building temp = null;
 		
 		for (Field f : BuildingCoordinates.class.getDeclaredFields())
@@ -370,7 +380,44 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 				// which would have been AWESOME to have here. Unfortunately the Android API doesn't have anything like
 				// that. We could probably calculate our own if we really wanted to...
 				
-				if (HOUSE.getBounds().contains(currPoint))
+				float minDistance = 1000;
+				Building minBuilding = null;
+				
+				for(Building b: AllBuildings)
+				{
+					if (b.getBounds().contains(currPoint))
+					{
+						if (!currentBuilding.equals(b.getName()))
+						{
+							Toast.makeText(getBaseContext(),
+									"ENTERED " + HOUSE.getName(),
+									Toast.LENGTH_SHORT).show();
+							
+							currentBuilding = b.getName();
+						}
+					}
+					else
+					{
+						distanceToBuilding = b.getCentreLocation().distanceTo(location);
+						if(distanceToBuilding < minDistance)
+						{
+							minDistance = distanceToBuilding;
+							minBuilding = b;
+						}
+					}
+				}
+				
+				if(minDistance < 20)
+				{
+					AlertDialog.Builder builder1 = new AlertDialog.Builder(activity);
+		            builder1.setMessage("You are near " + minBuilding.getName());
+		            builder1.setCancelable(true);
+		            
+		            AlertDialog alert11 = builder1.create();
+		            alert11.show();
+				}
+				
+				/*if (HOUSE.getBounds().contains(currPoint))
 				{
 					if (!currentBuilding.equals(HOUSE.getName()))
 					{
@@ -391,7 +438,7 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 					currentBuilding = E1.getName();
 					
 					Log.d("CurrentBuilding", currentBuilding);
-				}
+				}*/
 			}
 		}
 
@@ -449,9 +496,6 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 			}
 		}
 	}
-	
-	
-	
 	
 	private class MapOverlay extends Overlay
 	{
