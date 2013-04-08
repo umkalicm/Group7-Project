@@ -17,6 +17,8 @@ import com.google.android.maps.MapController;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.group7.project.R;
 
@@ -48,7 +50,8 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 	private float distanceToBuilding;			// Calculates distance between user and center point of building
 	
 	private String currentBuilding = "(none)";	// String value to keep track of the building we are currently in
-	private Activity activity = this; 
+	private Activity activity = this;
+	private GoogleMap mMap;
 	/****************
 	 * toggleUserTracking
 	 * 
@@ -185,6 +188,14 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
+
+		//Get a listing of all the buildings and save them so we can
+		//		access them easier later
+		AllBuildings[0] = E1;
+		AllBuildings[1] = E2;
+		AllBuildings[2] = E3;
+		AllBuildings[3] = UCENTRE;
+		AllBuildings[4] = HOUSE;
 		//starting latitude and longitude. currently a location near EITC
 		final float startLat = 49.808503f;
 		final float startLong = -97.135824f;
@@ -227,7 +238,7 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 		// ***** THIS IS ONLY DEBUG CODE USED TO CHECK THE BOUNDS OF BUILDINGS ENTERED *******
 		// See the BuildingCoordinates.java file for more details on buildings
 		
-		List<Overlay> mapOverlays = mapView.getOverlays();
+		/*List<Overlay> mapOverlays = mapView.getOverlays();
 		Drawable drawable = this.getResources().getDrawable(R.drawable.ic_launcher);
 		HelloItemizedOverlay itemizedoverlay = new HelloItemizedOverlay(drawable, this);
 		
@@ -247,15 +258,17 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 		
 		OverlayItem overlayitem2 = new OverlayItem(point2, "E1", "SOUTH WEST");
 		itemizedoverlay.addOverlay(overlayitem2);
-		mapOverlays.add(itemizedoverlay);
+		mapOverlays.add(itemizedoverlay);*/
 		
-		//Get a listing of all the buildings and save them so we can
-		//		access them easier later
-		AllBuildings[0] = E1;
-		AllBuildings[1] = E2;
-		AllBuildings[2] = E3;
-		AllBuildings[3] = UCENTRE;
-		AllBuildings[4] = HOUSE;
+		//mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.mapView)).getMap();
+		/*mMap.addMarker(new MarkerOptions()
+        .position(new LatLng(0, 0))
+        .title("Hello world"));
+		for(Building b: AllBuildings)
+		{
+			
+		}*/
+		
 	}
 
 	/****************
@@ -296,7 +309,7 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 	protected boolean isRouteDisplayed()
 	{
 		//I should figure out what this is about
-		return false;
+		return true;
 	}
 	
 	
