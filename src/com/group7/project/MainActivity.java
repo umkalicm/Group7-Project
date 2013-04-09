@@ -175,6 +175,7 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 		GeoPoint centerPoint = new GeoPoint((int)(startLat * 1E6), (int)(startLong * 1E6));	//create a GeoPoint based on those values
 		
 		mapView = (MapView) findViewById(R.id.mapView);	//get the MapView object from activity_main
+		mapView.requestFocus();
 		toggleTrackingButton = (ToggleButton) findViewById(R.id.toggleTrackingButton);	//get the toggleTrackingButton from activity_main
 
 		//settings on what to show on the map

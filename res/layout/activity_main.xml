@@ -27,5 +27,22 @@
         android:layout_alignParentRight="true"
         android:onClick="@string/toggleUserTracking"
         android:text="@string/ToggleButton" />
+        
+    <Button
+        android:id="@+id/searchButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toLeftOf="@+id/toggleTrackingButton"
+        android:text="Search" />
+     <LinearLayout android:focusable="true"
+ android:focusableInTouchMode="true" android:layout_width="0px"
+ android:layout_height="0px" />   
+     <EditText
+        android:id="@+id/editText"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content" 
+        android:layout_alignParentBottom="true"
+        android:layout_toLeftOf="@+id/searchButton"/>   
 
 </RelativeLayout>
