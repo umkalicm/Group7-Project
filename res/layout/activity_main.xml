@@ -34,10 +34,11 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_toLeftOf="@+id/toggleTrackingButton"
+        android:onClick="@string/searchButtonClicked"
         android:text="Search" />
      <LinearLayout android:focusable="true"
- android:focusableInTouchMode="true" android:layout_width="0px"
- android:layout_height="0px" />   
+ 		android:focusableInTouchMode="true" android:layout_width="0px"
+ 		android:layout_height="0px" />   
      <EditText
         android:id="@+id/editText"
         android:layout_width="100dp"

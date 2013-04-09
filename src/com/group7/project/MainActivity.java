@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -44,6 +45,7 @@ import android.location.LocationManager;
 public class MainActivity extends MapActivity implements BuildingCoordinates
 {	
 	private MapView mapView;					// The map view used for higher level functions
+	private EditText editText;
 	private MapController mapController;		// But most processing will happen with the map controller
 	private LocationManager locationManager;	// Location manager deals with things to do with current device location (GPS)
 	private LocationListener locationListener;	// The listener that checks for all events to do with location (GPS turned on/off, location change, etc.
@@ -89,6 +91,44 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 			}
 		}
 		
+	}
+	
+	public void searchButtonClicked(View v)
+	{
+		String searchCriteria = editText.getText().toString();
+		Building searchBuilding = null;
+		GeoPoint p = null;
+		for(Building b: AllBuildings)
+		{
+			if(b.getName().toLowerCase().contains(searchCriteria.toLowerCase()))
+			{
+				searchBuilding = b;
+				break;
+			}
+		}
+		if(searchBuilding != null)
+		{
+			p = new GeoPoint( (int) (searchBuilding.getCenter().latitude * 1E6), 
+                    (int) (searchBuilding.getCenter().longitude * 1E6));
+
+			mapController.animateTo(p);
+			mapController.setZoom(20);
+		
+		    //listOfOverlays.add(mapOverlay);
+		
+		    mapView.invalidate();
+		    editText.setText("");
+		    mapView.requestFocus();
+		}
+		else
+		{
+			AlertDialog.Builder builder2 = new AlertDialog.Builder(activity);
+            builder2.setTitle("Google Map");
+            builder2.setMessage("Please Provide better search criteria");
+            builder2.setCancelable(true);
+            
+            builder2.show();
+		}
 	}
 	
 	/****************
@@ -165,6 +205,18 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 		AllBuildings.add(E3);
 		AllBuildings.add(UCENTRE);
 		AllBuildings.add(HOUSE);
+		AllBuildings.add(Fletcher_Argue);
+		AllBuildings.add(Buller);
+		AllBuildings.add(Elizabeth_Dafoe_Library);
+		AllBuildings.add(Helen_Glass);
+		AllBuildings.add(Parkade);
+		AllBuildings.add(Russell);
+		AllBuildings.add(Eng_Parking);
+		AllBuildings.add(Education);
+		AllBuildings.add(St_Pauls_College);
+		AllBuildings.add(St_Johns_College);
+		AllBuildings.add(Q_Lot);
+		
 		//starting latitude and longitude. currently E1
 		final double startLat = AllBuildings.get(0).getCenter().latitude;
 		final double startLong = AllBuildings.get(0).getCenter().longitude;
@@ -176,6 +228,7 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 		
 		mapView = (MapView) findViewById(R.id.mapView);	//get the MapView object from activity_main
 		mapView.requestFocus();
+		editText  = (EditText)findViewById(R.id.editText);
 		toggleTrackingButton = (ToggleButton) findViewById(R.id.toggleTrackingButton);	//get the toggleTrackingButton from activity_main
 
 		//settings on what to show on the map
@@ -222,7 +275,7 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 					(int) (b.getCenter().longitude * 1E6)
 				);
 			
-			OverlayItem overlayitem = new OverlayItem(point, b.getName(), "Founded: 1900");
+			OverlayItem overlayitem = new OverlayItem(point, b.getName(), b.getInfo());
 			itemizedoverlay.addOverlay(overlayitem);
 			mapOverlays.add(itemizedoverlay);	
 		}

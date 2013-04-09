@@ -14,11 +14,13 @@ public class Building
 	LatLngBounds bounds;
 	Location centrePoint;
 	LatLng centre;
+	String info;
 	
-	public Building(String name, LatLngBounds bounds)
+	public Building(String name, LatLngBounds bounds, String info)
 	{
 		this.name = name;
 		this.bounds = bounds;
+		this.info = info;
 		double n = bounds.northeast.latitude;
 		double e = bounds.northeast.longitude;
 		double s = bounds.southwest.latitude;
@@ -38,6 +40,11 @@ public class Building
 	public String getName()
 	{
 		return name;
+	}
+	
+	public String getInfo()
+	{
+		return info;
 	}
 	
 	public LatLng getCenter()
