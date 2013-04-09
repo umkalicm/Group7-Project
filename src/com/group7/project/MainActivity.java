@@ -1,6 +1,7 @@
 package com.group7.project;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.List;
 
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import com.google.android.maps.MapController;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
+import com.google.android.maps.Projection;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -29,6 +31,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Paint.Style;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.location.GpsStatus;
@@ -52,6 +56,9 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 	
 	private String currentBuilding = "(none)";	// String value to keep track of the building we are currently in
 	private Activity activity = this;
+	private Paint circlePainter;
+    private Point screenCurrentPoint;
+    private MapOverlay mapOverLay;
 //	private GoogleMap mMap;
 	/****************
 	 * toggleUserTracking
@@ -139,44 +146,6 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 		return super.dispatchTouchEvent(event);
 	}
 	
-/*
-	//LIMIT TO CAMPUS - THIS IS HARD
-	@Override
-	public boolean dispatchTouchEvent(MotionEvent event)
-	{
-		GeoPoint newPoint;
-		
-		final float minLong = -97.156992f;
-		final float maxLong = -97.123303f;
-		final float minLat = 49.805292f;
-		final float maxLat = 49.813758f;
-		
-		int currLat;
-		int currLong;
-		
-		if (event.getAction() == MotionEvent.ACTION_MOVE)
-		{
-			newPoint = mapView.getProjection().fromPixels((int)event.getX(), (int)event.getY());
-			
-			currLat = newPoint.getLatitudeE6();
-			currLong = newPoint.getLongitudeE6();
-
-			float temp = currLat - minLat;
-			int minLatInt = (int)(minLat * 1E6);
-			
-			if ((currLat - minLatInt) < 0)
-			{
-				newPoint = new GeoPoint(minLatInt, currLong);
-				//mapController.stopPanning();				
-				//mapController.setCenter(newPoint);
-				mapView.invalidate();
-			}
-		}
-		
-		return super.dispatchTouchEvent(event);
-	}
-*/	
-	
 	/****************
 	 * onCreate
 	 *  
@@ -189,17 +158,16 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
-
 		//Get a listing of all the buildings and save them so we can
 		//		access them easier later
-		AllBuildings[0] = E1;
-		AllBuildings[1] = E2;
-		AllBuildings[2] = E3;
-		AllBuildings[3] = UCENTRE;
-		AllBuildings[4] = HOUSE;
-		//starting latitude and longitude. currently a location near EITC
-		final float startLat = 49.808503f;
-		final float startLong = -97.135824f;
+		AllBuildings.add(E1);
+		AllBuildings.add(E2);
+		AllBuildings.add(E3);
+		AllBuildings.add(UCENTRE);
+		AllBuildings.add(HOUSE);
+		//starting latitude and longitude. currently E1
+		final double startLat = AllBuildings.get(0).getCenter().latitude;
+		final double startLong = AllBuildings.get(0).getCenter().longitude;
 		
 		super.onCreate(savedInstanceState);		//run the parent's onCreate, where I imagine the UI stuff gets taken care of
 		setContentView(R.layout.activity_main);	//set our main activity to be the default view
@@ -230,7 +198,7 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 		//mapView.setBuiltInZoomControls(true);	//turn on zoom controls
 
 		mapController = mapView.getController();
-		mapController.setZoom(20);					//set default zoom level
+		mapController.setZoom(17);					//set default zoom level
 		mapController.setCenter(centerPoint);		//move center of map
 		
 		// Overlays stuff could be very important later on. I don't quite fully understand it yet myself
@@ -240,6 +208,9 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 		// See the BuildingCoordinates.java file for more details on buildings
 		
 		List<Overlay> mapOverlays = mapView.getOverlays();
+		mapOverLay = new MapOverlay();
+		mapOverlays.add(mapOverLay);
+		
 		Drawable drawable = this.getResources().getDrawable(R.drawable.marker);
 		HelloItemizedOverlay itemizedoverlay = new HelloItemizedOverlay(drawable, this);
 		
@@ -254,6 +225,7 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 			itemizedoverlay.addOverlay(overlayitem);
 			mapOverlays.add(itemizedoverlay);	
 		}
+		//mapView.invalidate();
 	}
 
 	/****************
@@ -332,8 +304,7 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 				}
 
 				// add marker
-				MapOverlay mapOverlay = new MapOverlay();
-				mapOverlay.setPointToDraw(userPoint);
+				mapOverLay.setPointToDraw(userPoint);
 				List<Overlay> listOfOverlays = mapView.getOverlays();
 				
 				if (markerLoc != -1)	// markerLoc == -1 if no location had ever been previously set
@@ -341,7 +312,7 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 					listOfOverlays.remove(markerLoc);
 				}
 				
-				listOfOverlays.add(mapOverlay);			//add the marker to the mapView's overlays
+				listOfOverlays.add(mapOverLay);			//add the marker to the mapView's overlays
 				markerLoc = listOfOverlays.size()-1;	//keep track of where it's stored so we can update it later
 				
 				//invalidating it forces the map view to re-draw
@@ -450,7 +421,7 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 		}
 	}
 	
-	private class MapOverlay extends Overlay
+	public class MapOverlay extends Overlay
 	{
 		private GeoPoint pointToDraw;
 		
@@ -469,11 +440,36 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 		@Override
 		public boolean draw(Canvas canvas, MapView mapView, boolean shadow, long when)
 		{
+			circlePainter = new Paint();
+	        circlePainter.setAntiAlias(true);
+	        circlePainter.setStrokeWidth(2.0f);
+	        circlePainter.setColor(0xff6666ff);
+	        circlePainter.setStyle(Style.STROKE);
+	        circlePainter.setAlpha(70);
+	        for(Building b: AllBuildings)
+			{
+				if(b!=null)
+				{
+					GeoPoint point = new GeoPoint(
+					(int) (b.getCenter().latitude * 1E6),
+					(int) (b.getCenter().longitude * 1E6)
+					);
+					// Get projection from the mapView. 
+			        Projection projection = mapView.getProjection();
+			        screenCurrentPoint = new Point();
+			        // Project the gps coordinate to screen coordinate
+			        projection.toPixels(point, screenCurrentPoint);
+	
+			        int radius = 200;
+			        // draw the blue circle
+			        canvas.drawCircle(screenCurrentPoint.x, screenCurrentPoint.y, radius, circlePainter);
+				}
+			}
 			super.draw(canvas, mapView, shadow);           
-		
+				
 			// convert point to pixels
 			Point screenPts = new Point();
-			mapView.getProjection().toPixels(pointToDraw, screenPts);
+			if(pointToDraw!=null)mapView.getProjection().toPixels(pointToDraw, screenPts);
 			
 			// add marker
 			Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);

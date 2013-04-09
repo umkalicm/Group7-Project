@@ -1,12 +1,15 @@
 package com.group7.project;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 
 public interface BuildingCoordinates
 {
 	final int NUM_BUILDINGS = 5;
-	static Building AllBuildings[] = new Building[NUM_BUILDINGS];
+	static List<Building> AllBuildings = new ArrayList<Building>();
 	int i=0;
 	// Used this site to get coordinates: http://itouchmap.com/latlong.html
 	
