@@ -204,14 +204,12 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 		AllBuildings.add(E2);
 		AllBuildings.add(E3);
 		AllBuildings.add(UCENTRE);
-		AllBuildings.add(HOUSE);
 		AllBuildings.add(Fletcher_Argue);
 		AllBuildings.add(Buller);
 		AllBuildings.add(Elizabeth_Dafoe_Library);
 		AllBuildings.add(Helen_Glass);
 		AllBuildings.add(Parkade);
 		AllBuildings.add(Russell);
-		AllBuildings.add(Eng_Parking);
 		AllBuildings.add(Education);
 		AllBuildings.add(St_Pauls_College);
 		AllBuildings.add(St_Johns_College);
@@ -237,8 +235,7 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 		
 		//GPS setup stuff
 		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		locationListener = new GPSLocationListener();
-		
+		locationListener = new GPSLocationListener();		
 		locationManager.addGpsStatusListener((Listener) locationListener);
 		
 		//This next line here sets our listener to check for changes to the GPS
@@ -250,16 +247,10 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 		
 		
 		//mapView.setBuiltInZoomControls(true);	//turn on zoom controls
-
+		
 		mapController = mapView.getController();
 		mapController.setZoom(17);					//set default zoom level
 		mapController.setCenter(centerPoint);		//move center of map
-		
-		// Overlays stuff could be very important later on. I don't quite fully understand it yet myself
-		// All these do right now is display little Android icons at the North-East and South-West corners
-		// of a building (which I currently have set to E1).
-		// ***** THIS IS ONLY DEBUG CODE USED TO CHECK THE BOUNDS OF BUILDINGS ENTERED *******
-		// See the BuildingCoordinates.java file for more details on buildings
 		
 		List<Overlay> mapOverlays = mapView.getOverlays();
 		mapOverLay = new MapOverlay();
@@ -279,6 +270,7 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 			itemizedoverlay.addOverlay(overlayitem);
 			mapOverlays.add(itemizedoverlay);	
 		}
+		
 		//mapView.invalidate();
 	}
 
@@ -342,7 +334,7 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 		 */
 		@Override
 		public void onLocationChanged(Location location) {
-
+						
 			// Run the very first time the GPS gets a signal and is able to fix the user's location
 			if (location != null && GPSEvent == GpsStatus.GPS_EVENT_FIRST_FIX) {
 				userPoint = new GeoPoint(
@@ -408,6 +400,7 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 					}
 				}
 	 			
+				/*
 				if(minDistance == 70 && minBuilding != null)//tell user they are near a building only once when they get about 70 metres close to it 
 				{					 //this prevents multiple alerts as they get closer
 					AlertDialog.Builder builder1 = new AlertDialog.Builder(activity);
@@ -416,7 +409,8 @@ public class MainActivity extends MapActivity implements BuildingCoordinates
 		            
 		            AlertDialog alert11 = builder1.create();
 		            alert11.show();
-				}				
+				}
+				*/				
 			}
 		}
 

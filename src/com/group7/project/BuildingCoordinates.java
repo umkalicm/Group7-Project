@@ -18,28 +18,22 @@ public interface BuildingCoordinates
 	static Building E1 = new Building("EITC-E1", E1_BOUNDS, "Founded: 1943, E1 has libraries, study areas and various engineering departments");
 
 	// EITC-E2
-	final LatLng E2_NORTHEAST = new LatLng(49.80895, -97.133426);
-	final LatLng E2_SOUTHWEST = new LatLng(49.808399, -97.134247);
+	final LatLng E2_NORTHEAST = new LatLng(49.808918, -97.133389);
+	final LatLng E2_SOUTHWEST = new LatLng(49.808545, -97.134161);
 	final LatLngBounds E2_BOUNDS = new LatLngBounds(E2_SOUTHWEST, E2_NORTHEAST);
 	static Building E2 = new Building("EITC-E2", E2_BOUNDS, "Founded: 2005, E2 has libraries, study areas and various engineering departments");
 	
 	// EITC-E3
-	final LatLng E3_NORTHEAST = new LatLng(49.808652, -97.13444);
-	final LatLng E3_SOUTHWEST = new LatLng(49.808116, -97.134939);
+	final LatLng E3_NORTHEAST = new LatLng(49.8086, -97.134451);
+	final LatLng E3_SOUTHWEST = new LatLng(49.808185, -97.134751);
 	final LatLngBounds E3_BOUNDS = new LatLngBounds(E3_SOUTHWEST, E3_NORTHEAST);
 	static Building E3 = new Building("EITC-E3", E3_BOUNDS, "Founded: 1943, E3 has libraries, study areas and various engineering departments"); 
 	
 	// UNIVERSITY CENTRE
-	final LatLng UCENTRE_NORTHEAST = new LatLng(49.809742, -97.134097);
-	final LatLng UCENTRE_SOUTHWEST = new LatLng(49.808399, -97.134247);
+	final LatLng UCENTRE_NORTHEAST = new LatLng(49.809704, -97.134054);
+	final LatLng UCENTRE_SOUTHWEST = new LatLng(49.809147, -97.134864);
 	final LatLngBounds UCENTRE_BOUNDS = new LatLngBounds(UCENTRE_SOUTHWEST, UCENTRE_NORTHEAST);
 	static Building UCENTRE = new Building("University Centre", UCENTRE_BOUNDS, "Founded: 1845, University Centre is the centre of campus. It has various facilities such as restaurants, IQ's, pool table, tax office, study areas etc.");
-	
-	// MY HOUSE
-	final LatLng HOUSE_NORTHEAST = new LatLng(49.923167, -97.20252);
-	final LatLng HOUSE_SOUTHWEST = new LatLng(49.922528, -97.203818);
-	final LatLngBounds HOUSE_BOUNDS = new LatLngBounds(HOUSE_SOUTHWEST, HOUSE_NORTHEAST);
-	static Building HOUSE = new Building("HOUSE", HOUSE_BOUNDS, "Founded: 1943, E3 has libraries, study areas and various engineering departments");
 	
 	// Drake
 	final LatLng DRAKE_NORTHEAST = new LatLng(49.80839,-97.129729);
@@ -77,11 +71,13 @@ public interface BuildingCoordinates
 	final LatLngBounds RUSSELL_BOUNDS = new LatLngBounds(RUSSELL_SOUTHWEST, RUSSELL_NORTHEAST);
 	static Building Russell = new Building("Russell", RUSSELL_BOUNDS, "Founded: 1887, Russel building was found by a guy called Russell");
 
+	/*
 	// Engineering Parking
 	final LatLng ENG_PARKING_NORTHEAST = new LatLng(49.808096,-97.133314);
 	final LatLng ENG_PARKING_SOUTHWEST = new LatLng(49.807807,-97.133683);
 	final LatLngBounds ENG_PARKING_BOUNDS = new LatLngBounds(ENG_PARKING_SOUTHWEST, ENG_PARKING_NORTHEAST);
 	static Building Eng_Parking = new Building("Engineering Parking", ENG_PARKING_BOUNDS, "Parking at engineering");
+	*/
 
 	// Buller
 	final LatLng BULLER_NORTHEAST = new LatLng(49.810792,-97.133111);
@@ -93,11 +89,11 @@ public interface BuildingCoordinates
 	final LatLng EDUCATION_NORTHEAST = new LatLng(49.809213,-97.136659);
 	final LatLng EDUCATION_SOUTHWEST = new LatLng(49.808431,-97.137255);
 	final LatLngBounds EDUCATION_BOUNDS = new LatLngBounds(EDUCATION_SOUTHWEST, EDUCATION_NORTHEAST);
-	static Building Education = new Building("Education", EDUCATION_BOUNDS, "Founded: 1843, EDucation has libraries, study areas and various engineering departments");
+	static Building Education = new Building("Education", EDUCATION_BOUNDS, "Founded: 1843, Education has libraries, study areas and various engineering departments");
 
 	// St. Paul's College
-	final LatLng STP_NORTHEAST = new LatLng(49.810702,-97.137652);
-	final LatLng STP_SOUTHWEST = new LatLng(49.809579,-97.137606);
+	final LatLng STP_NORTHEAST = new LatLng(49.810362,-97.137487);
+	final LatLng STP_SOUTHWEST = new LatLng(49.809619,-97.137664);
 	final LatLngBounds STP_BOUNDS = new LatLngBounds(STP_SOUTHWEST, STP_NORTHEAST);
 	static Building St_Pauls_College = new Building("St. Paul's College", STP_BOUNDS, "Founded: 1908, St.Pauls has libraries, study areas and various dormitories");
 
